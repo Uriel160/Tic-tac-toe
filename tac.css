@@ -1,0 +1,68 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column; /* Asegura que el botón esté debajo del tablero */
+    justify-content: center;
+    align-items: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 60px); /* Cambiado a 60px para ajustarse a 200px */
+    grid-template-rows: repeat(3, 60px);
+    gap: 5px;
+}
+
+.cell {
+    width: 60px; /* Cambiado a 60px para que el tablero quepa en 200x200 */
+    height: 60px;
+    background-color: white;
+    border: 2px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem; /* Ajustado el tamaño de fuente para que quepa mejor */
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cell:hover {
+    background-color: lightgray;
+}
+
+.message {
+    margin-top: 20px;
+    font-size: 1.2rem; /* Ajustado para que se vea mejor en la pantalla pequeña */
+    font-weight: bold;
+    color: #333;
+}
+
+button {
+    margin-top: 20px; /* Espacio entre el tablero y el botón */
+    padding: 8px 16px; /* Ajustado para que se vea más proporcionado */
+    font-size: 1rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
