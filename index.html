@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #121212; /* Color de fondo oscuro */
+            color: white; /* Color del texto */
+            font-family: 'Verdana', sans-serif;
+        }
+
+        .content {
+            width: 200px; /* Ancho del contenido */
+            background-color: #1e1e1e; /* Fondo de contenido */
+            padding: 20px;
+            border-radius: 8px; /* Bordes redondeados */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .marker {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .marker-item {
+            text-align: center;
+        }
+
+        .marker-item .header {
+            background-color: #333; /* Color de fondo de las cabeceras */
+            padding: 5px;
+            border-radius: 5px; /* Bordes redondeados */
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 5px;
+        }
+
+        .cell {
+            width: 40px; /* Ancho de las celdas */
+            height: 40px; /* Alto de las celdas */
+            background-color: #ffffff; /* Fondo blanco de las celdas */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px; /* Tamaño de la fuente */
+            color: transparent; /* Texto invisible hasta que se hace clic */
+            cursor: pointer;
+            border: 2px solid #fff; /* Borde blanco */
+            transition: background-color 0.3s;
+        }
+
+        .cell:hover {
+            background-color: #e0e0e0; /* Color de fondo al pasar el mouse */
+        }
+
+        .cell.x {
+            color: #04AA6D; /* Color de la 'X' */
+        }
+
+        .cell.o {
+            color: #f6a400; /* Color de la 'O' */
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px; /* Bordes redondeados */
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #666; /* Cambiar color al pasar el mouse */
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+
+        <div class="marker">
+            <div class="marker-item">
+                <div class="header">X</div>
+                <span id="marker-X">0</span>
+            </div>
+            <div class="marker-item">
+                <div class="header">O</div>
+                <span id="marker-O">0</span>
+            </div>
+        </div>
+
+        <div id="board" class="board"></div>
+
+        <button id="restart">Reiniciar</button>
+    </div>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const restartButton = document.getElementById('restart');
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let playerCounter = { 'X': 0, 'O': 0 };
+
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        // Inicializa el tablero
+        function createBoard() {
+            board.forEach((_, index) => {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.setAttribute('data-cell', index);
+                cell.addEventListener('click', handleCellClick);
+                boardElement.appendChild(cell);
+            });
+        }
+
+        // Maneja el clic en una celda
+        function handleCellClick(event) {
+            const clickedCell = event.target;
+            const clickedCellIndex = clickedCell.getAttribute('data-cell');
+
+            if (board[clickedCellIndex] !== '' || !gameActive) {
+                return; // Si la celda ya está ocupada o el juego no está activo, no hace nada
+            }
+
+            board[clickedCellIndex] = currentPlayer;
+            clickedCell.classList.add(currentPlayer.toLowerCase()); // Agrega clase para el color
+            clickedCell.textContent = currentPlayer; // Muestra la X o O
+            checkWinner();
+            if (gameActive) {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X'; // Cambia de jugador
+                if (currentPlayer === 'O') {
+                    computerMove(); // La computadora hace su movimiento
+                }
+            }
+        }
+
+        // Movimiento automático de la computadora
+        function computerMove() {
+            const availableCells = board.map((cell, index) => (cell === '' ? index : null)).filter(index => index !== null);
+            const randomIndex = Math.floor(Math.random() * availableCells.length);
+            const cellIndex = availableCells[randomIndex];
+
+            board[cellIndex] = currentPlayer;
+            const cells = document.querySelectorAll('.cell');
+            cells[cellIndex].classList.add(currentPlayer.toLowerCase()); // Agrega clase para el color
+            cells[cellIndex].textContent = currentPlayer; // Muestra la X o O
+            checkWinner();
+            currentPlayer = 'X'; // Cambia de jugador de vuelta a X
+        }
+
+        // Verifica si hay un ganador
+        function checkWinner() {
+            for (let combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    alert(`${currentPlayer} GANÓ!`); // Alerta de ganador
+                    gameActive = false;
+                    updateScore(currentPlayer);
+                    return;
+                }
+            }
+            if (!board.includes('')) {
+                alert("¡Empate!"); // Alerta de empate
+                gameActive = false;
+            }
+        }
+
+        // Reinicia el juego
+        function restartGame() {
+            board.fill('');
+            gameActive = true;
+            currentPlayer = 'X';
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('x', 'o');
+            });
+        }
+
+        // Actualiza el marcador
+        function updateScore(player) {
+            playerCounter[player]++;
+            document.getElementById(`marker-${player}`).textContent = playerCounter[player];
+        }
+
+        // Agrega evento de reinicio
+        restartButton.addEventListener('click', restartGame);
+
+        // Crea el tablero al cargar
+        createBoard();
+    </script>
+</body>
+</html>
